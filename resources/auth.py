@@ -1,10 +1,11 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, url_for
 from models.user import User
 from extensions import db, mail
 from schemas.user_schema import UserSchema
 from services.auth_service import generate_access_token, generate_verification_token
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, decode_token
 from utils.otp import generate_otp, send_otp_email
+from flask_mail import Message
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -68,8 +69,8 @@ def login():
     if not user or not user.check_password(data['password']):
         return jsonify({"message": "Invalid credentials"}), 401
 
-    # if not user.is_verified:
-    #     return jsonify({"message": "Please verify your email before logging in."}), 403
+    if not user.is_verified:
+        return jsonify({"message": "Please verify your email before logging in."}), 403
 
     access_token = create_access_token(identity=user.id)
     return jsonify({"access_token": access_token,
@@ -94,4 +95,24 @@ def request_otp():
     # Send the OTP via email
     send_otp_email(email, otp)
 
-    return {"msg": "OTP sent to your email."}, 200 
+    return {"msg": "OTP sent to your email."}, 200
+
+@auth_bp.route('/verify-email/<token>', methods=['GET'])
+def verify_email(token):
+    try:
+        decoded_token = decode_token(token)
+        email = decoded_token['sub']  # The identity is usually stored in 'sub'
+        user = User.query.filter_by(email=email).first()
+
+        if user is None or user.is_verified:
+            return jsonify({"message": "Invalid or expired token."}), 400
+
+        # Mark user as verified
+        user.is_verified = True
+        user.verification_token = None  # Clear the token after verification
+        db.session.commit()
+
+        return jsonify({"message": "Email verified successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Invalid verification token."}), 400
