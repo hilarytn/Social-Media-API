@@ -1,8 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from models.user import User
 from extensions import db
 from schemas.user_schema import UserSchema
-from services.auth_service import create_access_token
+from services.auth_service import create_access_token, generate_verification_token
 from flask_jwt_extended import create_access_token
 from utils.otp import generate_otp, send_otp_email
 
@@ -33,10 +33,26 @@ def register():
     )
 
     # Hash the password
-    user.set_password(data['password'])  
+    user.set_password(data['password'])
+
+    # Generate verification token
+    verification_token = generate_verification_token(user)
+    user.verification_token = verification_token 
 
     db.session.add(user)
     db.session.commit()
+
+    # Send verification email
+    verification_link = url_for('auth.verify_email', token=verification_token, _external=True)
+    msg = Message(subject="Email Verification", 
+                  sender=current_app.config['MAIL_USERNAME'], 
+                  recipients=[user.email])
+    msg.body = f"Please click the link to verify your email: {verification_link}"
+    
+    try:
+        mail.send(msg)
+    except Exception as e:
+        return jsonify({"message": f"Failed to send email: {str(e)}"}), 500
 
     return jsonify({"message": "User registered successfully. Please log in."}), 201
 
