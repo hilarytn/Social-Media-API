@@ -14,6 +14,7 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, onupdate=datetime.now(timezone.utc))
     last_login = db.Column(db.DateTime)
     is_verified = db.Column(db.Boolean, default=False)  # For email verification
+    verification_token = db.Column(db.String(128), nullable=True) 
 
     def to_dict(self):
         return {
