@@ -4,6 +4,7 @@ from extensions import db
 from schemas.user_schema import UserSchema
 from services.auth_service import create_access_token
 from flask_jwt_extended import create_access_token
+from utils.otp import generate_otp, send_otp_email
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -66,3 +67,15 @@ def all_users():
     users = User.query.all()
     users_list = [user.to_dict() for user in users]
     return jsonify(users_list)
+
+@auth_bp.route('/request_otp', methods=['POST'])
+def request_otp():
+    data = request.get_json()
+    email = data.get('email')
+
+    otp = generate_otp()
+
+    # Send the OTP via email
+    send_otp_email(email, otp)
+
+    return {"msg": "OTP sent to your email."}, 200
