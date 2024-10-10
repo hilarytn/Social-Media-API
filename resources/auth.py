@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
 from models.user import User
-from extensions import db
+from extensions import db, mail
 from schemas.user_schema import UserSchema
 from services.auth_service import create_access_token, generate_verification_token
 from flask_jwt_extended import create_access_token
