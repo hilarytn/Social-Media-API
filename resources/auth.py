@@ -60,3 +60,9 @@ def login():
                     "fullname": user.fullname,
                     "username": user.username,
                     "email": user.email}), 200
+
+@auth_bp.route('/all', methods=['GET'])
+def all_users():
+    users = User.query.all()
+    users_list = [user.to_dict() for user in users]
+    return jsonify(users_list)

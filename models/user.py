@@ -15,6 +15,13 @@ class User(db.Model):
     last_login = db.Column(db.DateTime)
     is_verified = db.Column(db.Boolean, default=False)  # For email verification
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'fullname': self.fullname,
+            'email': self.email
+        }
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
