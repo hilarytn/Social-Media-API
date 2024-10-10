@@ -78,4 +78,4 @@ def request_otp():
     # Send the OTP via email
     send_otp_email(email, otp)
 
-    return {"msg": "OTP sent to your email."}, 200
+    return {"msg": "OTP sent to your email."}, 200 
