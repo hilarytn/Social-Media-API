@@ -1,5 +1,6 @@
 from werkzeug.security import generate_password_hash
 from flask_jwt_extended import create_access_token
+from datetime import timedelta
 import re
 
 def hash_password(password):
