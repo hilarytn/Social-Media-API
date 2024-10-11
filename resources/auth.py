@@ -6,6 +6,8 @@ from services.auth_service import generate_access_token, generate_verification_t
 from flask_jwt_extended import create_access_token, decode_token
 from utils.otp import generate_otp, send_otp_email
 from flask_mail import Message
+from datetime import datetime, timedelta
+
 
 auth_bp = Blueprint('auth', __name__)
 
