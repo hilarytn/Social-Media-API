@@ -94,4 +94,36 @@ def request_otp():
     # Send the OTP via email
     send_otp_email(email, otp)
 
-    return {"msg": "OTP sent to your email."}, 200 
+    return {"msg": "OTP sent to your email."}, 200
+
+@auth_bp.route('/resend_verification', methods=['POST'])
+def resend_verification():
+    data = request.get_json()
+
+    user = User.query.filter_by(email=data['email']).first()
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    if user.is_verified:
+        return jsonify({"message": "Email is already verified"}), 400
+
+    # Generate a new verification token
+    verification_token = generate_verification_token(user)
+    user.verification_token = verification_token
+    user.verification_token_expiry = datetime.utcnow() + timedelta(hours=24)
+
+    db.session.commit()
+
+    # Send the verification email
+    verification_link = url_for('auth.verify_email', token=verification_token, _external=True)
+    msg = Message(subject="Resend Email Verification",
+                  sender=current_app.config['MAIL_USERNAME'], 
+                  recipients=[user.email])
+    msg.body = f"Please click the link to verify your email: {verification_link}"
+    
+    try:
+        mail.send(msg)
+    except Exception as e:
+        return jsonify({"message": f"Failed to send email: {str(e)}"}), 500
+
+    return jsonify({"message": "Verification email sent again. Please check your inbox."}), 200
