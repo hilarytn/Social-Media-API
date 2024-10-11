@@ -63,6 +63,10 @@ def register():
 def login():
     data = request.get_json()
 
+    # Validate input data
+    if 'email_or_username' not in data or 'password' not in data:
+        return jsonify({"message": "Missing email/username or password"}), 400
+
     user = User.query.filter(
         (User.email == data['email_or_username']) | 
         (User.username == data['email_or_username'])
