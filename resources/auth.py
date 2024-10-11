@@ -143,7 +143,7 @@ def resend_verification():
     msg = Message(subject="Resend Email Verification",
                   sender=current_app.config['MAIL_USERNAME'], 
                   recipients=[user.email])
-    msg.body = f"Please click the link to verify your email: {verification_link}"
+    msg.body = f"Please click the link to verify your email: {verification_link}\n This link expires in 24 hours"
     
     try:
         mail.send(msg)
