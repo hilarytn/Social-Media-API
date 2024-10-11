@@ -55,7 +55,7 @@ def register():
     except Exception as e:
         return jsonify({"message": f"Failed to send email: {str(e)}"}), 500
 
-    return jsonify({"message": "User registered successfully. Check your "}), 201
+    return jsonify({"message": f"User registered successfully. A verification link has been sent to your email {user.email} "}), 201
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -127,7 +127,7 @@ def resend_verification():
         return jsonify({"message": "User not found"}), 404
 
     if user.is_verified:
-        return jsonify({"message": "Email is already verified"}), 400
+        return jsonify({"message": f"Email {user.email} is already verified"}), 400
 
     # Generate a new verification token
     verification_token = generate_verification_token(user)
@@ -148,4 +148,4 @@ def resend_verification():
     except Exception as e:
         return jsonify({"message": f"Failed to send email: {str(e)}"}), 500
 
-    return jsonify({"message": "Verification email sent again. Please check your inbox."}), 200
+    return jsonify({"message": f"Verification email sent again to {user.email} . Please check your inbox."}), 200
