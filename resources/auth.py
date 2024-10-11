@@ -3,8 +3,9 @@ from models.user import User
 from extensions import db, mail
 from schemas.user_schema import UserSchema
 from services.auth_service import generate_access_token, generate_verification_token
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, decode_token
 from utils.otp import generate_otp, send_otp_email
+from flask_mail import Message
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -95,6 +96,27 @@ def request_otp():
     send_otp_email(email, otp)
 
     return {"msg": "OTP sent to your email."}, 200
+
+@auth_bp.route('/verify-email/<token>', methods=['GET'])
+def verify_email(token):
+    try:
+        decoded_token = decode_token(token)
+        email = decoded_token['sub']  # The identity is usually stored in 'sub'
+        user = User.query.filter_by(email=email).first()
+
+        if user is None or user.is_verified:
+            return jsonify({"message": "Invalid or expired token."}), 400
+
+        # Mark user as verified
+        user.is_verified = True
+        user.verification_token = None  # Clear the token after verification
+        db.session.commit()
+
+        return jsonify({"message": "Email verified successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Invalid verification token."}), 400
+
 
 @auth_bp.route('/resend_verification', methods=['POST'])
 def resend_verification():
