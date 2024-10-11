@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, url_for
 from models.user import User
 from extensions import db, mail
 from schemas.user_schema import UserSchema
