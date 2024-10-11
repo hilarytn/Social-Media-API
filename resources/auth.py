@@ -54,7 +54,7 @@ def register():
     except Exception as e:
         return jsonify({"message": f"Failed to send email: {str(e)}"}), 500
 
-    return jsonify({"message": "User registered successfully. Please log in."}), 201
+    return jsonify({"message": "User registered successfully. Check your "}), 201
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -68,8 +68,8 @@ def login():
     if not user or not user.check_password(data['password']):
         return jsonify({"message": "Invalid credentials"}), 401
 
-    # if not user.is_verified:
-    #     return jsonify({"message": "Please verify your email before logging in."}), 403
+    if not user.is_verified:
+        return jsonify({"message": "Please verify your email before logging in."}), 403
 
     access_token = create_access_token(identity=user.id)
     return jsonify({"access_token": access_token,
