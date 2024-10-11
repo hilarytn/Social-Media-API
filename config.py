@@ -9,10 +9,16 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 
-        # Email configurations
-    MAIL_SERVER = os.environ.get('MAIL_SERVER')  # e.g., 'smtp.gmail.com'
-    MAIL_PORT = os.environ.get('MAIL_PORT')      # e.g., 587
+    # Email configurations
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = os.environ.get('MAIL_PORT')
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+
+    # Redis configurations
+    REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+    REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
+    REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
+    OTP_EXPIRATION_TIME = int(os.environ.get('OTP_EXPIRATION_TIME', 300))
