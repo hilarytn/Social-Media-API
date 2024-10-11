@@ -1,6 +1,8 @@
 from werkzeug.security import generate_password_hash
 from flask_jwt_extended import create_access_token
 from datetime import timedelta
+from flask_mail import Message
+from extensions import mail
 import re
 
 def hash_password(password):
@@ -16,3 +18,11 @@ def validate_password(password):
 def generate_verification_token(user):
     token = create_access_token(identity=user.email, expires_delta=timedelta(hours=24))
     return token
+
+def send_verification_email(email, otp):
+    msg = Message("Your OTP Code", recipients=[email])
+    msg.body = f"Your OTP code is: {otp}"
+    try:
+        mail.send(msg)
+    except Exception as e:
+        print(f"Failed to send email: {e}")
