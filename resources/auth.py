@@ -78,7 +78,7 @@ def login():
     if not user.is_verified:
         return jsonify({"message": "Please verify your email before logging in."}), 403
 
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=15))
     return jsonify({"access_token": access_token,
                     "id": user.id,
                     "fullname": user.fullname,
