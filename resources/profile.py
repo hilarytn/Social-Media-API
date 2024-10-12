@@ -29,4 +29,22 @@ def view_profile(user_id):
         "personal_details": user.personal_details
     }), 200
 
+@profile_bp.route('/edit', methods=['PUT'])
+@jwt_required()
+def edit_profile():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
     
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    data = request.get_json()
+    user.fullname = data.get('fullname', user.fullname)
+    user.username = data.get('username', user.username)
+    user.bio = data.get('bio', user.bio)
+    user.profile_picture = data.get('profile_picture', user.profile_picture)
+    user.personal_details = data.get('personal_details', user.personal_details)
+
+    db.session.commit()
+    
+    return jsonify({"message": "Profile updated successfully"}), 200
