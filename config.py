@@ -22,3 +22,8 @@ class Config:
     REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
     REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
     OTP_EXPIRATION_TIME = int(os.environ.get('OTP_EXPIRATION_TIME', 300))
+
+    # Cloudinary configurations
+    CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
+    CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY')
+    CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET')

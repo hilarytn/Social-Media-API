@@ -3,6 +3,8 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_mail import Mail
 import redis
+import cloudinary
+from flask import current_app
 
 db = SQLAlchemy()
 jwt = JWTManager()
@@ -19,4 +21,12 @@ def init_redis(app):
         port=app.config['REDIS_PORT'],
         password=app.config['REDIS_PASSWORD'],
         decode_responses=True
+    )
+
+# Initialize Cloudinary configuration
+def init_cloudinary():
+    cloudinary.config(
+        cloud_name=current_app.config.get('CLOUDINARY_CLOUD_NAME'),
+        api_key=current_app.config.get('CLOUDINARY_API_KEY'),
+        api_secret=current_app.config.get('CLOUDINARY_API_SECRET')
     )
