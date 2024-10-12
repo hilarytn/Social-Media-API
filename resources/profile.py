@@ -8,7 +8,7 @@ import uuid
 profile_bp = Blueprint('profile', __name__)
 
 # View user profile
-@profile_bp.route('/<int:user_id>', methods=['GET'])
+@profile_bp.route('/<string:user_id>', methods=['GET'])
 @jwt_required()
 def view_profile(user_id):
     # Ensure user_id is valid UUID
@@ -28,3 +28,5 @@ def view_profile(user_id):
         "profile_picture": user.profile_picture,
         "personal_details": user.personal_details
     }), 200
+
+    
