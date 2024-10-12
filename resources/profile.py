@@ -9,7 +9,6 @@ profile_bp = Blueprint('profile', __name__)
 
 # View user profile
 @profile_bp.route('/<string:user_id>', methods=['GET'])
-@jwt_required()
 def view_profile(user_id):
     # Ensure user_id is valid UUID
     try:
@@ -29,7 +28,7 @@ def view_profile(user_id):
         "personal_details": user.personal_details
     }), 200
 
-@profile_bp.route('/edit', methods=['PUT'])
+@profile_bp.route('/details/edit', methods=['PUT'])
 @jwt_required()
 def edit_profile():
     user_id = get_jwt_identity()
