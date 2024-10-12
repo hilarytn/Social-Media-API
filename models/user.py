@@ -13,14 +13,18 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, onupdate=datetime.now(timezone.utc))
     last_login = db.Column(db.DateTime)
-    is_verified = db.Column(db.Boolean, default=False)  # For email verification
-    verification_token = db.Column(db.String(128), nullable=True) 
+    is_verified = db.Column(db.Boolean, default=False)
+    verification_token = db.Column(db.String(128), nullable=True)
+    bio = db.Column(db.Text, nullable=True) 
+    profile_picture = db.Column(db.String(200), nullable=True)
+    personal_details = db.Column(db.Text, nullable=True)
 
     def to_dict(self):
         return {
             'id': self.id,
             'fullname': self.fullname,
-            'email': self.email
+            'email': self.email,
+            'profile_picture': self.profile_picture
         }
 
     def set_password(self, password):
