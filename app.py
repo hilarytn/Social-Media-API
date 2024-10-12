@@ -1,6 +1,7 @@
 from flask import Flask
 from extensions import db, jwt, migrate, mail, init_redis
 from resources.auth import auth_bp
+from resources.profile import profile_bp
 from config import Config
 
 def create_app():
@@ -16,6 +17,7 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(profile_bp, url_prefix='/profile')
 
     return app
 
