@@ -12,12 +12,12 @@ content_bp = Blueprint('content', __name__)
 @jwt_required()
 def create_post():
     user_id = get_jwt_identity()
-    data = request.form  # Get text data from form
+    data = request.form
     content = data.get('content')
     
     # Handle media file upload
-    image_file = request.files.get('image_file')  # For image upload
-    video_file = request.files.get('video_file')  # For video upload
+    image_file = request.files.get('image_file')
+    video_file = request.files.get('video_file')
 
     image_url = upload_media(image_file, folder="images") if image_file else None
     video_url = upload_media(video_file, folder="videos") if video_file else None
@@ -29,7 +29,7 @@ def create_post():
         content=content,
         image_url=image_url,
         video_url=video_url,
-        user_id=user_id  # Assuming there's a foreign key relation with User
+        user_id=user_id 
     )
     db.session.add(new_post)
     db.session.commit()
