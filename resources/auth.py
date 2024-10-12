@@ -4,7 +4,7 @@ from extensions import db, mail
 from schemas.user_schema import UserSchema
 from services.auth_service import generate_access_token, generate_verification_token
 from flask_jwt_extended import create_access_token, decode_token
-from utils.otp import generate_otp, send_otp_email
+from utils.otp import generate_otp, send_otp_email, generate_and_store_otp, verify_otp
 from flask_mail import Message
 from datetime import datetime, timedelta
 
@@ -77,6 +77,13 @@ def login():
 
     if not user.is_verified:
         return jsonify({"message": "Please verify your email before logging in."}), 403
+    
+    #     # Request OTP after successful password check
+    # otp_response = request_login_otp() 
+    # if otp_response[1] != 200:
+    #     return otp_response
+
+    # return jsonify({"message": "Please check your email for the OTP."}), 200
 
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=15))
     return jsonify({"access_token": access_token,
@@ -155,3 +162,29 @@ def resend_verification():
         return jsonify({"message": f"Failed to send email: {str(e)}"}), 500
 
     return jsonify({"message": f"Verification email sent again to {user.email} . Please check your inbox."}), 200
+
+@auth_bp.route('/request-otp', methods=['POST'])
+def request_login_otp():
+    data = request.get_json()
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    otp = generate_and_store_otp(user.id)
+    print(otp)
+
+    return jsonify({"message": "OTP sent"}), 200
+
+@auth_bp.route('/verify-otp', methods=['POST'])
+def verify_otp_route():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    otp_input = data.get('otp')
+
+    if verify_otp(user_id, otp_input):
+        # Issue access token or perform login actions
+        access_token = create_access_token(identity=user_id)
+        return jsonify({"access_token": access_token}), 200
+    else:
+        return jsonify({"message": "Invalid or expired OTP"}), 401
