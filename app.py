@@ -2,7 +2,7 @@ from flask import Flask
 from extensions import db, jwt, migrate, mail, init_redis, init_cloudinary
 from resources.auth import auth_bp
 from resources.profile import profile_bp
-from resource.content import content_bp
+from resources.content import content_bp
 from config import Config
 
 def create_app():
@@ -15,7 +15,9 @@ def create_app():
     migrate.init_app(app, db)
     mail.init_app(app)
     init_redis(app)
-    init_cloudinary(app)
+
+    with app.app_context():
+        init_cloudinary()  
 
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
