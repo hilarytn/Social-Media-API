@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 content_bp = Blueprint('content', __name__)
 
 # Create Post
-@content_bp.route('/posts', methods=['POST'])
+@content_bp.route('/post', methods=['POST'])
 @jwt_required()
 def create_post():
     user_id = get_jwt_identity()
