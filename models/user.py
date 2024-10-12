@@ -19,6 +19,10 @@ class User(db.Model):
     profile_picture = db.Column(db.String(200), nullable=True)
     personal_details = db.Column(db.Text, nullable=True)
 
+    posts = db.relationship('Post', backref='user', lazy=True)
+    comments = db.relationship('Comment', backref='user', lazy=True)
+    liked_posts = db.relationship('Post', secondary='likes', backref=db.backref('liked_by', lazy='dynamic'))
+
     def to_dict(self):
         return {
             'id': self.id,
